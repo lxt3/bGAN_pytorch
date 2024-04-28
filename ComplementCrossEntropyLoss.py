@@ -26,7 +26,7 @@ class ComplementCrossEntropyLoss(torch.nn.Module):
       assert self.except_index is not None
       target = torch.autograd.Variable(torch.LongTensor(input.data.shape[0]).fill_(self.except_index).cuda())
     result = torch.nn.functional.nll_loss(
-      torch.log(1. - torch.nn.functional.softmax(input) + 1e-4), 
+      torch.log(1. - torch.nn.functional.softmax(input, dim=1) + 1e-4), 
       target, weight=self.weight, 
       size_average=self.size_average, 
       ignore_index=self.ignore_index)
