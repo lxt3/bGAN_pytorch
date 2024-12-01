@@ -1,0 +1,125 @@
+.reveal .slides section .slideContent p {
+    display: inline-block;
+    font-size: 0.6em;
+    line-height: 1.3em;
+    vertical-align: top;
+  }
+
+
+.custom-title {
+  font-size: 48pt;
+  color: black;
+  line-height: 0.6; /*!important;*/
+  /*line-height: 1em;  */
+}
+
+
+.title {
+  line-height: 1.0 !important;
+  line-gap-override: -2px;
+  
+}
+
+slides > slide {
+  font-family: 'TimesRoman';
+  color: black;
+}
+
+/*.reveal .slide-background-content{
+  background-image: "border2.png";
+  background-size: 100% 100%;
+  background-color: "lightyellow"
+}*/
+
+body {
+  font-family: 'TimesRoman'; 
+  font-size: 40px; 
+  background-color: "lightyellow"
+}
+
+.reveal {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 44px;
+  background-color: "lightyellow"
+}
+
+
+.reveal .title {
+  line-height: 1em; /* Adjust the line height as needed */
+}
+
+li {
+  vspace: 2em; /* Adjust the vertical spacing as needed */
+}
+
+.sizing36{
+  font-size: 36pt;
+}
+
+.sizing28{
+  font-size: 28pt;
+}
+
+.sizing32px{
+  font-size: 32px; !important;
+}
+
+.sizing24{
+  font-size: 24pt; !important;
+}
+
+.sizing14{
+  font-size: 14pt;
+}
+
+
+
+
+
+/*.title-slide h1 {
+  font-size: 48pt;
+  line-height: 1em;
+}*/
+
+.reveal .content {
+  font-family: 'TimesRoman';
+  font-size: 32px;
+}
+
+.sizing18{
+  font-size: 18pt;
+}
+
+
+.fontTable{
+  font-family: TimesRoman;
+  font-size: 18pt; !important;
+}
+
+.reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+  font-family: 'TimesRoman'; /* Headers */
+}
+
+.reveal section h2 {
+  font-family: 'TimesRoman'; /* Headers */
+  font-size: 32pt !important;
+/*  color: #4682B4;*/
+  color: #306090;
+ 
+}
+
+
+
+.reveal h3 {
+  font-family: 'TimesRoman'; /* Headers */
+  font-size: 24pt !important;
+}
+
+.centered-text {
+  text-align: center;
+}
+
+/*.reveal .footer {
+  font-size: 0.35em !important;
+  text-align: left !important;
+}*/
