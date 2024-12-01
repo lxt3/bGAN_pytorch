@@ -1,0 +1,534 @@
+---
+title: <font size= 48pt color="black"><span class='custom-title'>Ideas and Challenges for using Synthetic Data to Augment Clinical Data <br></br></span></font>
+
+author: <font size= 6.5em color="black" style="font-family:TimesRoman">Laura Thompson, Ph.D.<br> Senior Mathematical Statistician <br>CDER/OTS/OB/DBIV/DRD<br>Food and Drug Administration<br><br>Bayesian Biostatistics 2024, Rockville, MD – USA</font>
+date: 10-24-2024
+date-format: "MMMM D, YYYY"
+format:
+  revealjs:
+    smaller: true
+    scrollable: true
+    code-overflow: scroll
+    code-fold: show
+    code-tools: true
+    code-summary: "code"
+    code-copy: true
+    chalkboard: false
+    slide-number: true
+    show-slide-number: all
+    slide-level: 2
+    title-slide-style: default
+    title-slide-attributes:
+      data-background-image: border3.png
+      data-background-opacity: "1"
+      data-background-size: cover
+    toc: false
+    footnotes-hover: true
+    reference-location: document
+    logo: "logo.jpg"
+    background-size: contain
+    theme: theme.scss
+    background-image: border4.png    
+    center-title-slide: false
+    width: 1100
+    standalone: true
+    embed-resources: true
+    self-contained-math: true
+    
+css: "styleBBT.css"
+
+execute:
+  echo: true
+  warning: false
+filters:
+  - parse-latex
+editor_options: 
+  chunk_output_type: console
+extra_dependencies: ["booktabs"]
+---
+
+
+
+##  {.center}
+
+*Disclaimer: This presentation reflects my views and should not be construed to represent FDA’s views or policies.*
+
+## Challenges in rare disease studies {.sizing32px}
+
+         
+
+::: notes
+
+:::
+
+-   ::: {style="font-size: 36px;"}
+    Rare diseases pose challenges for conducting clinical trials, primarily due to the small patient population size. Thus, it may be difficult to recruit enough participants for adequately powered studies.
+    :::
+
+\vspace{4mm}
+
+-   ::: {style="font-size: 36px;"}
+    Traditional randomized controlled trials (RCTs) may be infeasible or impractical in rare disease research.
+    :::
+
+\vspace{4mm}
+
+-   ::: {style="font-size: 36px;"}
+    Small datasets can lead to imprecise parameter estimates and limit the power of statistical analyses.
+    :::
+
+
+## The emergence of generative AI and virtual patients
+
+         
+
+
+-   ::: {style="font-size: 36px;"}
+    We are starting to see more examples of using generative models to create clinical data
+
+    -   **Generative models for imaging data** –
+
+        See Sizikova & CDRH colleagues (2024)[^1] (GANs, diffusion models, deconvolutional models, VAEs, etc.)
+
+    -   **AnimalGAN** from NCTR (Chen et al. 2023[^2]) –
+
+        generation of synthetic clinical pathology measurements to assess toxicology of untested chemicals on animals
+
+    -   **Digital Twins** –
+
+        Unlearn.AI's PROCOVA (prognostic covariate adjustment model)[^3]
+    :::
+
+[^1]: Szikova et al. (2024) Synthetic data in radiological imaging: current state and future outlook, BJR\|Artificial Intelligence, 1(1)
+
+[^2]: Chen et al. (2023) AnimalGAN: A Generative Adversarial Network Model Alternative to Animal Studies for Clinical Pathology Assessment
+
+[^3]: Walsh et al. (2021) Using digital twins to reduce sample sizes while maintaining power and statistical accuracy, Alzheimer’s Dement. 2021;17(Suppl. 9):e054657
+
+
+## Some Past Bayesian Methods for Generating Synthetic Data
+
+
+::: {style="font-size: 36px;"}
+-   **Synthetic control** (Pennello & Thompson, 2008)[^4]
+
+-   **Priors constructed using in silico models**:
+
+    -   Stochastic engineering models to create virtual patients for prior information in medical device studies (Haddad et al. & MDIC, 2017[^5])
+    -   In-silico models of biological systems (Kiagias et al. 2021[^6])
+
+-   **Prior distributions on latent weight parameters of DL models**:
+
+    -   Bayesian Variational Autoencoders (VAEs) (Kingma & Welling, 2014)
+    -   Bayesian Generative Adversarial Networks (Saatchi & Wilson, 2017[^7]) and Variational Bayes GAN (Chien & Kuo, 2019[^8])
+    -   Bayesian (generative?) transformer models (\~2020 - 2022)
+:::
+
+[^4]: Pennello & Thompson (2008) Experience with reviewing Bayesian Medical Device Trials, Journal of Biopharmaceutical Statistics, 18:1, 81 - 115
+
+[^5]: Haddad et al. (2017) Incorporation of stochastic engineering models as prior information in Bayesian medical device trials, Journal of Biopharmaceutical Statistics, DOI: 10.1080/10543406.2017.1300907
+
+[^6]: Kiagias et al. (2021) Bayesian Augmented Clinical Trials in TB Therapeutic Vaccination, Front. Med. Technol. 3:719380.
+
+[^7]: Saatchi and Wilson (2017) Bayesian GAN. 31st Conference on Neural Information Processing Systems (NIPS 2017), Long Beach, CA, USA
+
+[^8]: Chien & Kuo (2019) Variational Bayesian GAN, 2019 27th European Signal Processing Conference (EUSIPCO)
+
+## Challenges with synthetic data
+
+
+         
+
+::: {style="font-size: 36px;"}
+-   ***Challenge 1***: How can synthetic data be generated such that they are in some sense exchangeable (i.e., interchangeable) with real data?
+
+\vspace{6em}
+
+-   ***Challenge 2***: How can we represent uncertainty in the generated synthetic data?
+
+\vspace{6em}
+
+-   ***Challenge 3***: How do we borrow strength from synthetic data to estimate drug/device/biologic performance on real patients?
+:::
+
+## Bayesian methods for synthetic data generation
+
+         
+
+
+-   ***Challenge 1***: Can naturally incorporate prior information into the generative model (e.g., as an informative prior distribution on the model weights, as conditional information for the model). This may help generate data similar to real data.
+
+\vspace{3mm}
+
+-   ***Challenge 2***: Can incorporate uncertainty into the data generation process by using prior distributions on model parameters (leading to posterior distns on parameters).
+
+    -   Can generate diverse instances by sampling different parent parameters from the posterior distribution, then sampling instances given the parameters.
+
+
+    -   Traditional synthetic data generation methods may rely on point estimates of parameters and thus not fully capture the underlying data distribution.
+
+## *Challenge 3*: How do we borrow strength from synthetic data to estimate product performance on real patients?
+
+
+         
+
+-   ::: {style="font-size: 42px;"}
+    Bayesian hierarchical models (BHMs) are natural frameworks for combining data across sources
+    :::
+
+    -   When estimating a parameter associated with the real data, a hierarchical model could borrow strength from synthetic data by assuming the parameters for the synthetic and real data are exchangeable, i.e., iid “draws” from same super-population.
+    -   Borrowing may improve the precision of the estimated parameter for the real data as the variation in parameters between synthetic and real data decreases.\
+        
+
+## Evaluating comparability of synthetic data to real source data
+
+
+         
+
+::: {style="font-size: 42px;"}
+-   How well do the synthetic data capture statistical properties and relationships present in the real data?
+
+\vspace{6em}
+
+-   Are the resulting synthetic dataset(s) exchangeable with the real dataset?
+:::
+
+## Evaluating comparability of synthetic data to source
+
+         
+
+
+-   Traditional metrics to assess comparability
+    -   Qualitative: Compare latent representations of real versus synthetic data (e.g., PCA, tSNE, UMAP) to ensure that the generated datasets capture properties of the source data distribution.
+    -   Quantitative: Compute cosine similarity or KS-test per variable across datasets
+    -   Quantitative: Train a classifier to predict real versus fake samples
+-   Exchangeability - more a concept rather than a measure
+    -   Some borrowing methods assume exchangeability (e.g., HMs)
+    -   Regulatory Considerations – often rely on subject-matter experts, perhaps with some down-weighting of prior data
+
+##  {.center}
+
+::: {style="font-size: 52px;"}
+::: {style="text-align: center;"}
+**Proof-of-concept *Exercise*\***:
+:::
+
+<br>
+
+::: {style="text-align: center;"}
+Generate synthetic data and combine it with "real" (simulated) data
+:::
+:::
+
+
+<br><br><br>
+
+*I do not necessarily think this is ideal
+
+## Example: Bayesian GAN to generate synthetic data
+
+         
+
+
+-   GANs are deep neural network architectures consisting of a generator and a discriminator. They are set up to compete against each other (hence the term adversarial). Given some input data
+    -   the *generator* **G** tries to create truly new samples from the input data distribution, passing them on to the discriminator <!-- therefore implicitly trying to approximate the true data distribution -->
+    -   the *discriminator* **D** receives both real and generated ata and tries to determine if what it gets was real or fake
+    -   **G** tries to fool **D** (make fake look real), who in turn tries to improve on distinguishing real vs. fake
+    
+    \vspace{4mm}
+    
+-   By placing prior distributions on the parameters of the generator and discriminator, the *Bayesian* GAN approximates a posterior distribution on the parameters and then generates synthetic data from the approximate posterior predictive distribution.
+
+## Bayesian GAN vs. traditional GAN
+
+         
+
+
+::: {style="font-size: 36px;"}
+-   As opposed to learning one generator and one discriminator, it learns *distributions* over possible generators and discriminators. Each generator in the distribution may focus on a different latent representation of the data.
+
+\vspace{4mm}
+
+-   Due to the prior distributions on the parameters of the generator network, Bayesian GANs introduce uncertainty into the synthetic data generation process.
+:::
+
+## Example - BGAN (create simulated "real" data) {.sizing24}
+
+         
+
+
+Example similar to the multi-modal synthetic data generation example from the original BGAN paper (Saatchi & Wilson, 2017).
+
+
+$$\underset{5000 \times 30}{\mathbf{X}_1} \sim N(\mathbf{\mu}_1, \mathbf{\Sigma}) \hspace{2mm} \underset{5000 \times 30}{\mathbf{X}_2} \sim N(\mathbf{\mu}_2, \mathbf{\Sigma})$$ $$\mathbf{\Sigma}: \hspace{2mm} \sigma_{ii} = 1, \hspace{1mm}  \sigma_{ij} = 0.2 $$ The mean vectors were either all 1s or all -1s. $$\mathbf{\mu}_1 = [1,...,1] \hspace{5mm} \mathbf{\mu}_2 = [-1,...,-1]$$ I added 8 pairwise interactions to the 30 covariates:
+
+$$\hspace{5mm} \underset{5000 \times 38}{\mathbf{X}_j} \leftarrow \underset{5000 \times 30}{\mathbf{X}_j} + \text{8 interactions}$$
+
+I simulated a binary "response" vector using the $\mathbf{X}$s and a coefficient vector $\mathbf{\beta}$ drawn from a MVN distribution with correlations of 0.2.
+
+$$\underset{500 \times 1}{\mathbf{y}_1} \sim Bern(p = {(1+\operatorname{exp}( \mathbf{X}_1\beta)})^{-1})$$
+
+$$\underset{500 \times 1}{\mathbf{y}_2} \sim Bern(p = {(1+\operatorname{exp}( \mathbf{X}_2\beta)})^{-1})$$
+
+$$\underset{38 \times 1}{\mathbf{\beta}} \sim N(\mathbf{0},\Sigma) \hspace{3mm} \sigma_{ii} = 1, \hspace{1mm} \sigma_{ij} = 0.2$$ Training and validation sets, with and 80/20 split.
+
+$$ \underset{(80/20)}{\text{Training/valid set: }}  \begin{bmatrix}
+\mathbf{X}_1 & \vdots & \mathbf{y}_1  \\
+\hline
+\mathbf{X}_2 & \vdots & \mathbf{y}_2
+\end{bmatrix} $$
+
+-   Generator/discriminator networks were very similar to those used in the paper:
+
+    -   2-layer NN 25-1000-38 fully-connected with ReLU activation
+    -   2-layer NN 38-1000-1 fully-connected with ReLU activation
+
+\vspace{4mm}
+
+-   Test set (to be used in the combining stage) was the same structure as training set, but with 100 samples, 52/48 split between clusters.
+
+
+
+## Example - BGAN (Fit GAN and generate synthetic data) {.sizing24}
+
+         
+
+
+-   At convergence: **Generate 10 synthetic datasets** each of the size 200 (to collectively match size of validation set) by sampling different parameter vectors from the posterior distribution of generators.
+
+\vspace{4mm}
+
+-   Each synthetic dataset originates from a different generator.
+
+## Compare generated data to source (validation) data
+
+
+-   Compare learned representations across synthetic and real datasets.
+
+
+
+-   Comparison of first 2 PCs of each of 10 synthetic datasets with validation dataset
+
+    ![](pca_validation_z0_eachm.png){.lightbox fig-align="left"}
+
+<!-- -   Comparison of t-distributed stochastic neighbor embeddings (tSNE) each of 10 synthetic datasets with validation data set. -->
+
+<!--     ![](tsne_val_z0_eachm.png){.lightbox fig-align="left"} -->
+
+<!-- -   tSNEs for 10 synthetic datasets combined compared to validation data set. -->
+
+<!--     ![](tsne_val_allzm.png){fig-align="center"} -->
+
+-   Compare histograms of validation data and (all) generated data across all 39 variables
+
+    ![](histograms_allzm_validation.png){fig-align="left"}
+
+<!-- -   Plot of 2D representations of sampled weight vectors from posterior distribution of generator networks -->
+
+<!--     ![](MDS.png){fig-align="center"} -->
+
+
+-   Nonetheless: Despite some issues with comparability of synthetic data with real validation data, we will forge ahead anyway...
+
+
+
+## Combine real and synthetic data using a BHM
+
+         
+
+::: {style="font-size: 36px;"}
+-   Each of the 10 synthetic datasets generated by the BayesGAN using different generator weight samples will be treated as a hypothetical "prior" study.
+
+-   Suppose we obtain new dataset (test set, here) which we want to combine with the prior studies. (Qualitative comparisons with synthetic datasets were similar to previous slide).
+
+\vspace{3mm}
+
+-   In the BHM, there are 11 studies. The study-specific parameters will form level 2 of the model, and will borrow information from each other.
+
+
+-   However, the data model used for observations in each study was different from that used in the generative model.
+:::
+
+## Description of Bayesian Hierarchical Model
+
+         
+
+
+
+Bayesian hierarchical logistic regression model, where the synthetic datasets ($j=1,...,10$) serve as prior studies for the "real" study ($j=test$).
+
+$$y_{ij} \sim Bern(p_{ij}) \hspace{5mm} i=1,...,n_j = 100; \hspace{3mm} j=1,...,10,\text{test}$$ $$p_{ij} = (1+\operatorname{exp}(\alpha_j +\mathbf{x}_{ij}^{T}\mathbf{\beta}_j))^{-1} $$
+
+$$\mathbf{\beta}_j \sim N(\mathbf{0},\mathbf{\Sigma}_{\beta}), \hspace{3mm} \alpha_j \sim N(0, 10) \hspace{3mm} j=1,...,10,\text{test}$$ LKJ prior on the correlation matrix (then transform back to covariance matrix $\mathbf{\Sigma_{\beta}}$)
+
+$$Cor(\mathbf{\beta}) = \mathbf{R}_{\mathbf{\beta}} = L_\Omega^T L_\Omega \sim  LKJ\_Corr(\eta = 0.8) \propto \operatorname{det}(\mathbf{R}_{\mathbf{\beta}})^{\eta - 1}$$
+
+
+We want to make inference on $\mathbf{\beta}_{test}$.
+
+## Compare posterior estimates (CI) of $\beta_{test}$ before and after borrowing from synthetic data {.centered-text background-color="lightyellow"}
+
+
+
+```{r}
+#| echo: false
+#####| fig.width: 13
+#####| fig.height: 10
+
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+
+#file_path <- "beta and a before borrow allzs mix supervised binary network.txt"  
+file_path <- "beta and a before borrow small test sample.txt"  
+before_borrow <- read.table(file_path, header = TRUE, sep = "\t", row.names = 1)
+
+#file_path <- "beta and a after borrow allzs mix supervised binary network.txt"  
+file_path <- "beta and a after borrow allzs small test sample mix supervised binary network.txt"  
+after_borrow <- read.table(file_path, header = TRUE, sep = "\t", row.names = 1)
+
+# Add an identifier column to distinguish source file
+before_borrow$source <- 'no borrow'
+after_borrow$source <- 'borrow'
+
+# remove alpha
+before_borrow <- before_borrow[-1,]
+after_borrow <- after_borrow[-1,]
+
+# Add a row index for interleaving
+before_borrow$row_id <- 1:nrow(before_borrow)
+after_borrow$row_id <- 1:nrow(after_borrow)
+
+before_borrow$interleave_id <- seq(1, by = 2, length.out = nrow(before_borrow))
+after_borrow$interleave_id <- seq(2, by = 2, length.out = nrow(after_borrow))
+
+# Combine datasets
+combined_data <- bind_rows(before_borrow, after_borrow)
+
+# Arrange according to interleave_id
+combined_data <- combined_data %>% arrange(interleave_id)
+
+##custom_labels <- rep(c("\alpha", sprintf("\beta_{%d}", 0:37)), each = 2)
+
+#custom_labels <- unlist(rep(c(expression(alpha), sapply(0:37, function(i) bquote(beta[.(i)]))), each = 2))
+
+# remove alpha
+custom_labels <- unlist(rep(c(sapply(1:38, function(i) bquote(beta[.(i)]))), each = 2))
+
+
+custom_labels <- sapply(seq_along(custom_labels), function(i) 
+  ifelse(i %% 2 == 1, custom_labels[i], expression(NA))
+)
+
+custom_labels <- rev(custom_labels) # for some reason. see also aes() factor levels
+
+# Create the plot
+ggplot2::ggplot(combined_data, aes(y = factor(interleave_id, levels = rev(interleave_id)), 
+                                   x = mean, color = source)) +
+  geom_point(size=1.5) +
+  geom_errorbarh(aes(xmin = `hdi_3.`, xmax = `hdi_97.`), height = 0.3, linewidth=.5) +
+  scale_color_manual(values = c("no borrow" = "blue", "borrow" = "red")) +
+  theme_minimal() +
+  scale_y_discrete(labels = custom_labels)+
+  labs(x = "CI on posterior estimate", y = "Parameter") +
+  theme(panel.grid.major.y = element_blank()) +   
+ 
+  theme(axis.text.y = element_text(size = 12),  # Add y-axis labels
+        axis.text.x = element_text(size = 16), 
+        panel.grid.major.y = element_blank(),   # Remove horizontal grid lines
+        axis.title.x = element_text(size = 16),  # Change x-axis title size
+        axis.title.y = element_text(size = 16),  # Change x-axis title size
+        
+        legend.text = element_text(size = 16),    # Change legend text size
+        legend.title = element_blank(),
+        axis.ticks.y = element_blank())
+
+```
+
+
+<!-- ## "Quick and Dirty" ESS for BHM {.centered-text} -->
+
+<!--           -->
+
+<!-- ```{r} -->
+<!-- #| echo: false -->
+
+
+
+<!-- ESS<-round(((before_borrow$sd^2)/(after_borrow$sd^2)),2) -->
+<!-- after_borrow_results<-after_borrow |> dplyr::mutate(ESS=ESS) -->
+<!-- after_borrow_results<-after_borrow_results |> dplyr::select(mean, sd,hdi_3.,hdi_97.,ESS) -->
+
+<!-- ##custom_labels_table <- unlist(c(expression(alpha), sapply(0:37, function(i) bquote(beta[.(i)])))) -->
+
+<!-- #custom_labels_table <- c("$\\alpha$", paste0("$\\beta_{", 0:37, "}$")) -->
+
+<!-- custom_labels_table <- c(paste0("$\\beta_{", 1:38, "}$")) # remove alpha -->
+
+<!-- ESS.label<-paste0("ESS/", "$n_{test}$") -->
+
+<!-- row.names(after_borrow_results)<-custom_labels_table -->
+
+<!-- library(knitr) -->
+<!-- kable(after_borrow_results, format = "latex", row.names = TRUE, digits=2, escape = FALSE,  -->
+<!--       col.names = c("mean", "SD", "LCL","UCL",ESS.label)) |> kableExtra::row_spec(1:nrow(after_borrow_results), hline_after = FALSE) -->
+
+
+<!-- ``` -->
+
+<!-- ## Reimherr et al. (2021) multivariate approximation -->
+
+```{r}
+#| echo: false
+
+library(readr)
+
+beta_noborrow_covs <- read_csv("beta_noborrow_covs.csv")
+beta_borrow_covs <- read_csv("beta_borrow_covs.csv")
+
+
+beta_borrow_covs<-as.matrix(beta_borrow_covs)
+beta_noborrow_covs<-as.matrix(beta_noborrow_covs)
+
+mu_pi_b = before_borrow[-1,"mean"]
+mu_pi = after_borrow[-1,"mean"]
+
+
+```
+
+## Comments on application of BHM to the example
+
+          
+
+
+
+-   The synthetic datasets from the BayesGAN may have been too diverse compared to the test dataset resulting in minimal  borrowing across coefficient vectors.
+
+
+
+-   A model with clusters of exchangeability may be more appropriate if some synthetic datasets are more similar to the current study than others. A Dirichlet process mixture model or LEAP model (Alt et al., 2024[^10]) could flexibly model alternatives to full exchangeability.
+
+\vspace{3mm}
+
+-   One could quantify how much was borrowed from synthetic datasets using prior effective sample size (PESS). PESS represents the amount of information contributed by the prior (synthetic datasets). 
+
+-   Several proposals for computing PESS. Approximation may be necessary for more complicated models. Reimherr et al. (2021)[^9] provide an approximation for a "multivariate" PESS.
+
+[^9]: Reimherr et al. Prior sample size extensions for assessing prior impact and prior-likelihood discordance, J R Stat Soc Series B. 2021;83:413–437.
+
+[^10]: Alt et al. (2024) LEAP: the latent exchangeability prior for borrowing information from historical data, Biometrics, 80(3).
+
+
+## Concluding remarks
+
+          
+
+-   Bayesian versions of synthetic data generation are potentially fruitful topics for future research.
+
+    -   Due the increasing availability of pre-trained models, these models might serve as priors to generate additional control subjects or even replace controls.
+
+-   BHMs are natural structures for combining information across synthetic datasets and real data. But, more flexible versions may be needed.
+
+-   Many newer generative models have natural levels of hierarchies that might be used (e.g., self-attention heads in multi-attention layers of transformers, generator networks in GANs)
+
+-   NumPyro (numpy backend for pyro with JAX) can be useful for fitting HMs with large amounts of simulated data.
