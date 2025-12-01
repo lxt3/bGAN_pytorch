@@ -1,5 +1,7 @@
 import torch
 import torch.nn as nn
+from torch.nn import TransformerEncoder, TransformerEncoderLayer
+from tabular_dl import FTTransformer
 
 class _netG64(nn.Module):
     def __init__(self, ngpu, nz=100, ngf=64, nc=3):
@@ -262,3 +264,94 @@ class _netG_ess_cond(nn.Module):
         output[:, self.binary_indices] = self.sigmoid(output[:, self.binary_indices])
         output[:, self.binary_indices] = (output[:, self.binary_indices] > self.threshold_prob).float() # death
         return output
+
+
+class _netG_ess_transformer(nn.Module):
+    def __init__(self, ngpu, nz, dimx, binary_indices=None,
+                 leaky_inplace=False, batch_norm_layers=None, affine=True):
+        super(_netG_ess_transformer, self).__init__()
+        self.ngpu = ngpu
+        if binary_indices is None:
+            binary_indices = []
+        if batch_norm_layers is None:
+            batch_norm_layers = []
+
+        self.dimx = dimx
+        binary_indices = sorted(binary_indices)
+        self.register_buffer(
+            "binary_indices", torch.tensor(binary_indices, dtype=torch.long)
+        )
+        non_binary = [i for i in range(dimx) if i not in binary_indices]
+        self.register_buffer(
+            "cont_indices", torch.tensor(non_binary, dtype=torch.long)
+        )
+
+        self.binary_count = int(self.binary_indices.numel())
+        self.cont_dim = int(self.cont_indices.numel())
+
+        self.seq_len = 4
+        self.embed_dim = 64
+        self.token_proj = nn.Linear(nz, self.seq_len * self.embed_dim)
+        self.pos_embedding = nn.Parameter(
+            torch.zeros(1, self.seq_len, self.embed_dim)
+        )
+
+        encoder_layer = TransformerEncoderLayer(
+            d_model=self.embed_dim,
+            nhead=4,
+            dim_feedforward=self.embed_dim * 2,
+            activation="gelu",
+            batch_first=True,
+        )
+        self.transformer = TransformerEncoder(encoder_layer, num_layers=1)
+
+        if self.cont_dim > 0:
+            self.feature_head = nn.Sequential(
+                nn.LayerNorm(self.embed_dim),
+                nn.Linear(self.embed_dim, 256),
+                nn.GELU(),
+                nn.Linear(256, self.cont_dim),
+            )
+        else:
+            self.feature_head = None
+
+        if self.binary_count > 0:
+            self.binary_head = nn.Sequential(
+                nn.LayerNorm(self.embed_dim),
+                nn.Linear(self.embed_dim, 128),
+                nn.GELU(),
+                nn.Linear(128, self.binary_count),
+            )
+            self.threshold_prob = nn.Parameter(
+                torch.full((self.binary_count,), 0.5)
+            )
+        else:
+            self.binary_head = None
+            self.register_parameter("threshold_prob", None)
+
+    def forward(self, input):
+        batch_size = input.size(0)
+        tokens = self.token_proj(input).view(
+            batch_size, self.seq_len, self.embed_dim
+        )
+        tokens = tokens + self.pos_embedding
+        encoded = self.transformer(tokens)
+        pooled = encoded.mean(dim=1)
+
+        output = torch.zeros(
+            batch_size, self.dimx, device=input.device, dtype=pooled.dtype
+        )
+
+        if self.feature_head is not None:
+            continuous = self.feature_head(pooled)
+            output[:, self.cont_indices] = continuous
+
+        if self.binary_head is not None:
+            binary_logits = self.binary_head(pooled)
+            binary_probs = torch.sigmoid(binary_logits)
+            threshold = self.threshold_prob.unsqueeze(0)
+            binary_feature = (binary_probs > threshold).float()
+            output[:, self.binary_indices] = binary_feature
+
+        return output
+
