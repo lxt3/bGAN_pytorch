@@ -29,7 +29,7 @@ executing==2.2.1
 fastrlock==0.8.3
 filelock==3.19.1
 flatbuffers==25.9.23
-fonttools==4.60.1
+fonttools==4.61.0
 fsspec==2025.9.0
 gast==0.6.0
 google-pasta==0.2.0
@@ -156,7 +156,7 @@ tzdata==2025.2
 ucxx-cu13==0.46.0
 urllib3==2.5.0
 wcwidth==0.2.14
-Werkzeug==3.1.3
+Werkzeug==3.1.4
 wheel==0.45.1
 wrapt==2.0.1
 zict==3.0.0
