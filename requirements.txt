@@ -154,7 +154,7 @@ triton==3.5.1
 typing_extensions==4.15.0
 tzdata==2025.2
 ucxx-cu13==0.46.0
-urllib3==2.6.0
+urllib3==2.6.3
 wcwidth==0.2.14
 Werkzeug==3.1.4
 wheel==0.45.1
