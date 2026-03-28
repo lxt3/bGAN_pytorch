@@ -126,7 +126,7 @@ pyzmq==27.1.0
 raft-dask-cu13==25.12.0
 rapids-dask-dependency==25.12.0
 rapids-logger==0.2.3
-requests==2.32.5
+requests==2.33.0
 rich==14.2.0
 rmm-cu13==25.12.0
 scikit-learn==1.7.2
