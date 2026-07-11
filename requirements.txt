@@ -69,7 +69,7 @@ mdurl==0.1.2
 mizani==0.14.3
 ml_dtypes==0.5.3
 mpmath==1.3.0
-msgpack==1.1.2
+msgpack==1.2.1
 namex==0.1.0
 nest-asyncio==1.6.0
 networkx==3.5
